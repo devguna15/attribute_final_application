@@ -71,6 +71,20 @@ def fetch_reference_attributes(hs4: str, db_path=DB_PATH):
         return row[0]  # this is stored JSON string
     return None
 
+def fetch_available_hs4_codes(db_path=DB_PATH):
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT DISTINCT hs4
+        FROM hs_attribute_store
+        WHERE hs4 IS NOT NULL AND hs4 != ''
+        ORDER BY hs4
+    """)
+
+    rows = cur.fetchall()
+    conn.close()
+    return [r[0] for r in rows]
 # -------------------------------
 # ✅ YOUR FINAL PARENT → CHILD PROMPT
 # -------------------------------
@@ -182,8 +196,20 @@ if api_key:
 col1, col2 = st.columns(2)
 
 with col1:
-    hs_code = st.text_input("HS Code (e.g., 25084010)", value="")
+    hs4_list = fetch_available_hs4_codes()
+
+    if not hs4_list:
+        st.error("No HS codes found in database. Please load data into hs_attribute_store.")
+        st.stop()
+
+    hs_code = st.selectbox(
+        "HS Code (HS4 from DB)",
+        options=hs4_list,
+        index=0
+    )
+
     item_description = st.text_area("Item Description (Child)", height=150)
+
 
 with col2:
     st.markdown("### 🔍 Reference Attributes (Parent from DB)")
