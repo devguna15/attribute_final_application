@@ -7,7 +7,7 @@ import openai
 # ✅ CONFIG
 # -------------------------------
 DB_PATH = "hs_attributes.db"
-MODEL_NAME = "gpt-5.4-nano"
+MODEL_NAME = "gpt-4.1-mini"
 
 # -------------------------------
 # ✅ DOMAIN MAPPING (HS2 → Domain)
